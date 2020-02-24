@@ -1,0 +1,32 @@
+1、在compoment 目录下面新建一个目录，如dept
+2、在dept目录中编辑主页面的功能
+3、将dept 引入到router目录下的index.js中，这个文件主要作用时让vue能够找到前端模块
+   形式如下
+  import DeptList from '@/components/dept/list'
+  编辑index.js 中的router变量。
+      {
+        path: '/',
+        component: Home,
+        name: '机构管理',
+        menuShow: true,
+        leaf: true,
+        iconCls: 'fa fa-group',
+        children: [
+          {path: '/admin/dept', component: DeptList, name: '角色管理', menuShow: true},
+        ]
+      }
+
+4、编写模板，定义模板对应的动作  一般就是/admin/dept/list.vue
+5、[界面操作]编辑系统菜单功能，使这个菜单能够在前台看到。这样可以把布局调整好。 也可以通过直接标记sys menu表实现
+6、给角色授权，这样拥有角色的用户登录后，就能够看到新的菜单
+7、编写脚本调用后台接口 api_dept.
+8、修改 模板， 增加对接口的调用以及数据的 预处理
+===============================================================================
+dept问题
+1、结构管理打开界面是 发送了三次查询请求
+2、删除成功后，没有回调 查询功能
+
+
+
+==========================================================
+{"total":1,"rows":[{"id":2,"userId":1,"deptId":0,"permission":111,"transmit":1,"username":"超级管理员","name":"总部","readPermission":false,"addPermission":true,"updatePermission":true,"deletePermission":false,"admPermission":true,"otherCMDPermission":true}]}

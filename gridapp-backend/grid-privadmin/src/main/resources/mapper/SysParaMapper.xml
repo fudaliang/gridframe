@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+                   
+<mapper namespace="com.softcloud.grid.privadmin.dao.SysParaDao">
+                                 
+	<select id="get" resultType="com.softcloud.grid.privadmin.domain.SysParaDO">
+		select `para_id` ,	`para_name` ,`value` ,`para_type`,`type_desc`,`order_num` ,`parent_id` ,`user_id_create` ,`gmt_create` ,`user_id_modified` ,`gmt_modified` ,`remark` ,`del_flag` 
+		from sys_para where para_id = #{value}
+	</select>
+                                   
+	<select id="list" resultType="com.softcloud.grid.privadmin.domain.SysParaDO">
+		select `para_id` ,	`para_name` ,`value` ,`para_type`,`type_desc`,`order_num` ,`parent_id` ,`user_id_create` ,`gmt_create` ,`user_id_modified` ,`gmt_modified` ,`remark` ,`del_flag` 
+		from sys_para
+		<where>
+			<if test="paraId != null and paraId != ''"> and para_id = #{paraId} </if>
+			<if test="paraName != null and paraName != ''"> and para_name = #{paraName} </if>
+			<if test="value != null and value != ''"> and value = #{value} </if>
+			<if test="paraType != null and paraType != ''"> and para_type = #{paraType} </if>
+			<if test="typeDesc != null and typeDesc != ''"> and type_desc = #{typeDesc} </if>
+			<if test="orderNum != null and orderNum != ''"> and order_num = #{orderNum} </if>
+			<if test="parentId != null and parentId != ''"> and parent_id = #{parentId} </if>
+			<if test="remark != null and remark != ''"> and remark = #{remark} </if>
+			<if test="userIdCreate != null and userIdCreate != ''"> and user_id_create = #{userIdCreate} </if>
+			<if test="gmtCreate != null and gmtCreate != ''"> and gmt_create = #{gmtCreate} </if>
+			<if test="userIdModified != null and userIdModified != ''"> and user_id_modified = #{userIdModified} </if>
+			<if test="gmtModified != null and gmtModified != ''"> and gmt_modified = #{gmtModified} </if>
+			<if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by para_type,order_num desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<select id="listParaType" resultType="com.softcloud.grid.privadmin.domain.SysParaDO">
+		select distinct `para_type` ,`type_desc` 
+		from sys_para
+		order by para_type
+
+	</select>
+
+	<select id="listByParaType" resultType="com.softcloud.grid.privadmin.domain.SysParaDO">
+		select `para_id`,`para_name` ,`value` ,`type_desc`,`order_num`,`remark`  
+		from sys_para
+		<where>
+			<if test="paraId != null and paraId != ''"> and para_id = #{paraId} </if>
+			<if test="paraName != null and paraName != ''"> and para_name = #{paraName} </if>
+			<if test="value != null and value != ''"> and value = #{value} </if>
+			<if test="paraType != null and paraType != ''"> and para_type = #{paraType} </if>
+			<if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+			
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by order_num desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<select id="count" resultType="int">
+		select count(*) from sys_para
+		<where>
+			<if test="paraId != null and paraId != ''"> and para_id = #{paraId} </if>
+			<if test="paraName != null and paraName != ''"> and para_name = #{paraName} </if>
+			<if test="value != null and value != ''"> and value = #{value} </if>
+			<if test="paraType != null and paraType != ''"> and para_type = #{paraType} </if>
+			<if test="typeDesc != null and typeDesc != ''"> and type_desc = #{typeDesc} </if>
+			<if test="orderNum != null and orderNum != ''"> and order_num = #{orderNum} </if>
+			<if test="parentId != null and parentId != ''"> and parent_id = #{parentId} </if>
+			<if test="remark != null and remark != ''"> and remark = #{remark} </if>
+			<if test="userIdCreate != null and userIdCreate != ''"> and user_id_create = #{userIdCreate} </if>
+			<if test="gmtCreate != null and gmtCreate != ''"> and gmt_create = #{gmtCreate} </if>
+			<if test="userIdModified != null and userIdModified != ''"> and user_id_modified = #{userIdModified} </if>
+			<if test="gmtModified != null and gmtModified != ''"> and gmt_modified = #{gmtModified} </if>
+			<if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.softcloud.grid.privadmin.domain.SysParaDO"
+		useGeneratedKeys="true" keyProperty="paraId">
+		insert into sys_para
+		(
+			`para_name` ,`value` ,`para_type`,`type_desc`,`order_num` ,`parent_id` ,
+			`user_id_create` ,`gmt_create` ,`user_id_modified` ,`gmt_modified` ,`remark` 
+		)
+		values
+		(
+	
+		#{paraName},
+		#{value},
+		#{paraType},
+		#{typeDesc},
+		#{orderNum},
+		#{parentId},
+		#{userIdCreate},
+		#{gmtCreate},
+		#{userIdModified},
+		#{gmtModified},
+		#{remark}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.softcloud.grid.privadmin.domain.SysParaDO">
+		update sys_para
+		<set>
+			<if test="paraName != null">`para_name` = #{paraName}, </if>
+			<if test="value != null">`value` = #{value}, </if>
+			<if test="paraType != null">`para_type` = #{paraType}, </if>
+			<if test="typeDesc != null">`type_desc` = #{typeDesc}, </if>
+			<if test="orderNum != null">`order_num` = #{orderNum}, </if>
+			<if test="parentId != null">`parent_id` = #{parentId}, </if>
+			<if test="userIdCreate != null">`user_id_create` = #{userIdCreate}, </if>
+			<if test="gmtCreate != null">`gmt_create` = #{gmtCreate}, </if>
+			<if test="userIdModified != null">`user_id_modified` = #{userIdModified}, </if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified},</if>
+			<if test="remark != null">`remark` = #{remark},</if>
+			<if test="delFlag != null">`del_flag` = #{delFlag}</if>
+		</set>
+		where para_id = #{paraId}
+	</update>
+
+
+
+</mapper>

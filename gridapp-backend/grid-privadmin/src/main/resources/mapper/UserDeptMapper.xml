@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softcloud.grid.privadmin.dao.UserDeptDao">
+
+	<select id="get" resultType="com.softcloud.grid.privadmin.domain.UserDeptDO">
+		select `id`,`user_id`,`dept_id`,`permission`,`transmit` from
+		sys_user_dept where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.softcloud.grid.privadmin.domain.UserDeptDO">
+		select `id`,`user_id`,`dept_id`,`permission`,`transmit` from sys_user_dept
+		<where>
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="int">
+		select count(*) from sys_user_dept
+		<where>
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+		</where>
+	</select>
+	
+	<select id="listDeptByUserId" resultType="long">
+		select `id`,`user_id`,`dept_id`,`permission`,`transmit` 
+		from sys_user_dept where user_id=#{userId}
+	</select>
+	
+	<select id="listUserIdByDeptId" resultType="long">
+		select user_id from sys_user_dept where `dept_id` = #{deptId}
+	</select>	
+	
+	<insert id="save" parameterType="com.softcloud.grid.privadmin.domain.UserDeptDO"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into sys_user_dept
+		(
+		`user_id`,
+		`dept_id`,
+		`permission`,
+		`transmit`
+		)
+		values
+		(
+		#{userId},
+		#{deptId},
+		#{permission},
+		#{transmit}
+		)
+	</insert>
+
+	<insert id="batchSave">
+		INSERT INTO sys_user_dept(user_id, dept_id,permission,transmit) values
+		<foreach item="item" index="index" collection="list"
+			separator=",">
+			(#{item.userId},#{item.deptId},#{permission},#{transmit})
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.softcloud.grid.privadmin.domain.UserDeptDO">
+		update sys_user_dept
+		<set>
+			<if test="deptId != null">`permission` = #{permission},</if>
+			<if test="deptId != null">`transmit` = #{transmit}</if>
+		</set>
+		<where>
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+		</where>
+	</update>
+
+	<delete id="remove">
+		delete from sys_user_dept where id = #{value}
+	</delete>
+
+	<delete id="batchRemove">
+		delete from sys_user_dept where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<delete id="removeByUserId">
+		delete from sys_user_dept where user_id=#{userId}
+	</delete>
+
+	<delete id="batchRemoveByUserId">
+		delete from sys_user_dept where user_id in
+		<foreach item="userId" collection="array" open="(" separator=","
+			close=")">
+			#{userId}
+		</foreach>
+	</delete>
+	
+	<delete id="removeByDeptId">
+		delete from sys_user_dept where `dept_id` = #{deptId}
+	</delete>
+
+	<delete id="batchRemoveByDeptId">
+		delete from sys_user_dept where dept_id in
+		<foreach item="deptId" collection="array" open="(" separator=","
+			close=")">
+			#{deptId}
+		</foreach>
+	</delete>
+	
+	<delete id="removeByUserIdDeptID">
+		delete from sys_user_dept 
+		where user_id=#{userId} and `dept_id` = #{deptId}
+	</delete>
+
+
+
+</mapper>

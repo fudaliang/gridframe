@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: @spring.profiles.active@
+  application:
+    name: grid-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: @spring.cloud.nacos.server-addr@
+        file-extension: yml
+      discovery:
+          server-addr: @spring.cloud.nacos.server-addr@

@@ -1,0 +1,12 @@
+﻿spring:
+  profiles:
+    active: dev  
+  application:
+    name: grid-privadmin
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: properties
+      discovery:
+        server-addr: localhost:8848  

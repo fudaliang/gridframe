@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softcloud.grid.privadmin.dao.DeptDao">
+
+	<select id="get" resultType="com.softcloud.grid.privadmin.domain.DeptDO">
+		select
+		`dept_id`,`parent_id`,`name`,`dept_level`,`order_num`,`del_flag`,`onwer_perms` ,`group_perms`,	`other_perms`,`gmt_create` ,`gmt_modified` from sys_dept
+		where dept_id = #{value}
+	</select>
+
+	<select id="list" resultType="com.softcloud.grid.privadmin.domain.DeptDO">
+		select `d`.`dept_id`,`d`.`parent_id`,`d`.`name`,`d`.`dept_level`,`p`.`name` pname,`d`.`remark`,`d`.`order_num`,`d`.`del_flag`,`d`.`onwer_perms` ,`d`.`group_perms`,`d`.`other_perms`,`d`.`gmt_create` ,`d`.`gmt_modified` from
+		sys_dept d
+		join sys_dept p on d.parent_id=p.dept_id
+		<where>
+			<if test="deptId != null and deptId != ''"> and `d`.dept_id = #{deptId} </if>
+			<if test="parentId != null and parentId != ''"> and `d`.parent_id = #{parentId} </if>
+			<if test="name != null and name != ''"> and `d`.name = #{name} </if>
+			<if test="deptLevel != null and deptLevel != ''"> and dept_level = #{deptLevel} </if>
+			<if test="orderNum != null and orderNum != ''"> and `d`.order_num = #{orderNum} </if>
+			<if test="delFlag != null and delFlag != ''"> and `d`.del_flag = #{delFlag} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by dept_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="batchList" resultType="com.softcloud.grid.privadmin.domain.DeptDO">
+		select `dept_id`,`parent_id`,`name`,`dept_level`,`order_num`,`del_flag` ,`onwer_perms` ,`group_perms`,	`other_perms`,`gmt_create` ,`gmt_modified`
+		from sys_dept where dept_id in
+		<foreach item="deptId" collection="array" open="(" separator=","
+			close=")">
+			#{deptId}
+		</foreach>
+		<choose>
+		<otherwise>
+				order by dept_id
+		</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="count" resultType="int">
+		select count(*) from sys_dept
+		<where>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+			<if test="parentId != null and parentId != ''"> and parent_id = #{parentId} </if>
+			<if test="name != null and name != ''"> and name = #{name} </if>
+			<if test="deptLevel != null and deptLevel != ''"> and dept_level = #{deptLevel} </if>
+			<if test="orderNum != null and orderNum != ''"> and order_num = #{orderNum} </if>
+			<if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+		</where>
+	</select>
+	
+	<select id="countChild" resultType="int">
+		select count(*) from sys_dept
+		<where>
+			<if test="deptId != null and deptId != ''"> FIND_IN_SET(`dept_id`,queryChildrenAreaInfo(#{deptId}))   </if>
+		</where>
+	</select>
+	
+	<select id="countParent" resultType="int">
+		select count(*) from sys_dept
+		<where>
+			<if test="deptId != null and deptId != ''"> FIND_IN_SET(`dept_id`,queryParentAreaInfo(#{deptId}))   </if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.softcloud.grid.privadmin.domain.DeptDO"
+		useGeneratedKeys="true" keyProperty="deptId">
+		insert into sys_dept
+		(
+		`parent_id`,
+		`name`,`dept_level`,
+		`order_num`,
+		`del_flag`,
+		`remark`,`onwer_perms` ,`group_perms`,	`other_perms`,`gmt_create` ,`gmt_modified`
+		)
+		values
+		(
+		#{parentId},
+		#{name},#{deptLevel},
+		#{orderNum},
+		#{delFlag},
+		#{remark},#{ownerPerms},#{groupPerms},#{otherPerms},#{gmtCreate},#{gmtModified}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.softcloud.grid.privadmin.domain.DeptDO">
+		update sys_dept
+		<set>
+			<if test="parentId != null">`parent_id` = #{parentId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="deptLevel != null">`dept_level` = #{deptLevel}, </if>
+			<if test="orderNum != null">`order_num` = #{orderNum}, </if>
+			<if test="delFlag != null">`del_flag` = #{delFlag},</if>
+			<if test="ownerPerms != null">`onwer_perms` = #{ownerPerms},</if>
+			<if test="groupPerms != null">`group_perms` = #{groupPerms},</if>
+			<if test="otherPerms != null">`other_perms` = #{otherPerms},</if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified},</if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where dept_id = #{deptId}
+	</update>
+
+	<delete id="remove">
+		delete from sys_dept where dept_id = #{value}
+	</delete>
+
+	<delete id="batchRemove">
+		delete from sys_dept where dept_id in
+		<foreach item="deptId" collection="array" open="(" separator=","
+			close=")">
+			#{deptId}
+		</foreach>
+	</delete>
+	
+	<select id="listParentDeptID" resultType="long">
+		select DISTINCT parent_id from sys_dept
+	</select>
+
+	<select id="listParentDept" resultType="com.softcloud.grid.privadmin.domain.DeptDO">
+		select `d`.`dept_id`,`d`.`parent_id`,`d`.`name`,`d`.`dept_level`,`p`.`name` pname,`d`.`remark`,`d`.`order_num`,`d`.`del_flag`,`d`.`onwer_perms` ,`d`.`group_perms`,`d`.`other_perms`,`d`.`gmt_create` ,`d`.`gmt_modified` from
+		sys_dept d
+		join sys_dept p on d.parent_id=p.dept_id OR (d.parent_id=-1 AND d.dept_id = 0 AND p.dept_id = 0)
+		<where>
+			<if test="deptId != null and deptId != ''"> FIND_IN_SET(`d`.`dept_id`,queryParentAreaInfo(#{deptId}))   </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by dept_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="listChildDept" resultType="com.softcloud.grid.privadmin.domain.DeptDO">
+		select `d`.`dept_id`,`d`.`parent_id`,`d`.`name`,`d`.`dept_level`,`p`.`name` pname,`d`.`remark`,`d`.`order_num`,`d`.`del_flag`,`d`.`onwer_perms` ,`d`.`group_perms`,`d`.`other_perms`,`d`.`gmt_create` ,`d`.`gmt_modified` from
+		sys_dept d
+		join sys_dept p on d.parent_id=p.dept_id OR (d.parent_id=-1 AND d.dept_id = 0 AND p.dept_id = 0)
+		<where>
+			<if test="deptId != null and deptId != ''">  FIND_IN_SET(`d`.`dept_id`,queryChildrenAreaInfo(#{deptId}))   </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by dept_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+    <select id="getDeptUserNumber" resultType="int">
+		select count(*) from sys_user where dept_id = #{value}
+	</select>
+</mapper>

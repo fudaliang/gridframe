@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: grid-srvadmin
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: yml
+      discovery:
+          server-addr: localhost:8848
